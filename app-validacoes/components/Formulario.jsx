@@ -9,6 +9,9 @@ export default function Formulario() {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
 
+    const [telefone, setTelefone] = useState('');
+    const [telefoneError, setTelefoneError] = useState('');
+
     const validateForm = () => {
         let isValid = true;
 
@@ -21,16 +24,21 @@ export default function Formulario() {
         if(!email.trim()){
             setEmailError("Email é obrigadorio!")
             isValid = false;
-        }else{
-            
+        }else{   
             setEmailError("");
+        }
+        if(!telefone.trim()){
+            setTelefoneError("Telefone é obrigadorio!")
+            isValid = false;
+        }else{
+            setTelefoneError("");
         }
 
         return isValid;
     };
     const handleSubmit = () => {
         if(validateForm()){
-            const dados = { nome, email }
+            const dados = { nome, email, telefone }
             console.log("Dados do formulario validos", dados);
             Alert.alert("Sucesso!!!", "Formulario enviado com sucesso!");
             alert("Sucesso!!!");
@@ -38,6 +46,7 @@ export default function Formulario() {
             // Reset form
             setNome("");
             setEmail("");
+            setTelefone("");
         }else{
             Alert.alert("Erro!!!", "Formulario não enviado!");
             alert("Erro!!!");
@@ -66,6 +75,15 @@ export default function Formulario() {
                         onChangeText={setEmail}
                     ></TextInput>
                     { emailError ? <Text style={globalStyles.errorText}>{emailError}</Text> : null}
+                </View>
+                <View style={globalStyles.inputContainer}>
+                    <TextInput
+                        style={[globalStyles.input, telefoneError && globalStyles.inputError]}
+                        placeholder="Telefone"
+                        value={telefone}
+                        onChangeText={setTelefone}
+                    ></TextInput>
+                    { telefoneError ? <Text style={globalStyles.errorText}>{telefoneError}</Text> : null}
                 </View>
                 <TouchableOpacity style={globalStyles.button} onPress={handleSubmit}>
                     <Text style={globalStyles.buttonText}>Entrar</Text>
