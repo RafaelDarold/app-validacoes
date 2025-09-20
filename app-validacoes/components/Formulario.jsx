@@ -1,94 +1,186 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
-import { globalStyles } from '../styles/globalStyles';
+import { ScrollView, View, Text, TextInput, Button, Alert } from "react-native";
+import styles from "../styles/globalStyles";
 
-export default function Formulario() {
-    const [nome, setNome] = useState('');
-    const [nomeError, setNomeError] = useState('');
+export default function Formularios() {
+    // Estados
+    const [nome, setNome] = useState("");
+    const [dataNascimento, setDataNascimento] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [telefone, setTelefone] = useState("");
+    const [celular, setCelular] = useState("");
+    const [cep, setCep] = useState("");
+    const [endereco, setEndereco] = useState("");
+    const [numero, setNumero] = useState("");
+    const [complemento, setComplemento] = useState("");
+    const [cidade, setCidade] = useState("");
+    const [estado, setEstado] = useState("");
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
+    const [confirmarSenha, setConfirmarSenha] = useState("");
+    const [nomePai, setNomePai] = useState("");
+    const [nomeMae, setNomeMae] = useState("");
+    const [idade, setIdade] = useState(null);
 
-    const [email, setEmail] = useState('');
-    const [emailError, setEmailError] = useState('');
+    // Erros
+    const [errors, setErrors] = useState({});
 
-    const [telefone, setTelefone] = useState('');
-    const [telefoneError, setTelefoneError] = useState('');
+    function validarCPF(cpf) {
+        cpf = cpf.replace(/[^\d]+/g, "");
+      
+        if (cpf.length !== 11) return false;
+      
+        if (/^(\d)\1{10}$/.test(cpf)) return false;
+      
+        let soma = 0;
+        let resto;
+      
+        for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf.substring(9, 10))) return false;
+      
+        soma = 0;
+        for (let i = 1; i <= 10; i++) soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf.substring(10, 11))) return false;
+      
+        return true;
+      }
+      
 
-    const validateForm = () => {
-        let isValid = true;
+    // Validações
+    const validar = () => {
+        let newErrors = {};
 
-        if(!nome.trim()){
-            setNomeError("Nome é obrigadorio!")
-            isValid = false;
-        }else{
-            setNomeError("");
+        // Nome
+        if (!nome.trim() || nome.trim().split(" ").length < 2) {
+            newErrors.nome = "Informe nome e sobrenome";
         }
-        if(!email.trim()){
-            setEmailError("Email é obrigadorio!")
-            isValid = false;
-        }else{   
-            setEmailError("");
-        }
-        if(!telefone.trim()){
-            setTelefoneError("Telefone é obrigadorio!")
-            isValid = false;
-        }else{
-            setTelefoneError("");
+
+        // Data nascimento
+        const regexData = /^([0-2][0-9]|(3)[0-1])\/(0[1-9]|1[0-2])\/\d{4}$/;
+        if (!regexData.test(dataNascimento)) {
+            newErrors.dataNascimento = "Data inválida (DD/MM/AAAA)";
+        } else {
+            const [dia, mes, ano] = dataNascimento.split("/").map(Number);
+            const hoje = new Date();
+            const nascimento = new Date(ano, mes - 1, dia);
+            let idadeCalc = hoje.getFullYear() - nascimento.getFullYear();
+            const mesAtual = hoje.getMonth() - nascimento.getMonth();
+            if (mesAtual < 0 || (mesAtual === 0 && hoje.getDate() < nascimento.getDate())) {
+                idadeCalc--;
+            }
+            setIdade(idadeCalc);
+            if (idadeCalc < 0 || idadeCalc > 120) {
+                newErrors.dataNascimento = "Idade inválida";
+            }
         }
 
-        return isValid;
+        // CPF
+        if (!validarCPF(cpf)) {
+            newErrors.cpf = "CPF inválido";
+          }
+
+        // Telefone fixo
+        const regexFixo = /^\(\d{2}\)\s\d{4}-\d{4}$/;
+        if (!regexFixo.test(telefone)) {
+            newErrors.telefone = "Formato: (11) 2345-6789";
+        }
+
+        // Celular
+        const regexCel = /^\(\d{2}\)\s\d{5}-\d{4}$/;
+        if (!regexCel.test(celular)) {
+            newErrors.celular = "Formato: (11) 91234-5678";
+        }
+
+        // CEP
+        const regexCep = /^\d{5}-?\d{3}$/;
+        if (!regexCep.test(cep)) {
+            newErrors.cep = "CEP inválido (XXXXX-XXX)";
+        }
+
+        // Email
+        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!regexEmail.test(email)) {
+            newErrors.email = "Email inválido";
+        }
+
+        // Senha
+        if (senha.length < 8) {
+            newErrors.senha = "Mínimo 8 caracteres";
+        }
+        if (senha !== confirmarSenha) {
+            newErrors.confirmarSenha = "Senhas não coincidem";
+        }
+
+        // Menores de idade
+        if (idade !== null && idade < 18) {
+            if (!nomePai.trim()) newErrors.nomePai = "Obrigatório para menores de 18";
+            if (!nomeMae.trim()) newErrors.nomeMae = "Obrigatório para menores de 18";
+        }
+
+        setErrors(newErrors);
+
+        if (Object.keys(newErrors).length === 0) {
+            Alert.alert("Sucesso", "Formulário válido!");
+        }
     };
-    const handleSubmit = () => {
-        if(validateForm()){
-            const dados = { nome, email, telefone }
-            console.log("Dados do formulario validos", dados);
-            Alert.alert("Sucesso!!!", "Formulario enviado com sucesso!");
-            alert("Sucesso!!!");
 
-            // Reset form
-            setNome("");
-            setEmail("");
-            setTelefone("");
-        }else{
-            Alert.alert("Erro!!!", "Formulario não enviado!");
-            alert("Erro!!!");
-        }
-    };
+    // Função auxiliar para renderizar inputs
+    const renderInput = (label, value, setter, placeholder, error, keyboardType = "default", secure = false) => (
+        <View style={styles.inputContainer}>
+            <Text style={styles.label}>{label}</Text>
+            <TextInput
+                style={[styles.input, error ? styles.inputError : null]}
+                value={value}
+                onChangeText={setter}
+                placeholder={placeholder}
+                keyboardType={keyboardType}
+                secureTextEntry={secure}
+            />
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        </View>
+    );
 
     return (
-        <View style={globalStyles.container}>
-            <View style={globalStyles.scrollContent}>
-                <Text style={globalStyles.title}>Formulario</Text>
+        <ScrollView style={styles.container}>
+            {/* Informações Pessoais */}
+            <Text style={styles.sectionTitle}>Informações Pessoais</Text>
+            {renderInput("Nome Completo", nome, setNome, "Ex: João Silva", errors.nome)}
+            {renderInput("Data de Nascimento", dataNascimento, setDataNascimento, "DD/MM/AAAA", errors.dataNascimento, "numeric")}
+            {renderInput("CPF", cpf, setCpf, "XXX.XXX.XXX-XX", errors.cpf, "numeric")}
+            {renderInput("Telefone Fixo", telefone, setTelefone, "(11) 2345-6789", errors.telefone)}
+            {renderInput("Celular", celular, setCelular, "(11) 91234-5678", errors.celular)}
 
-                <View style={globalStyles.inputContainer}>
-                    <TextInput
-                        style={[globalStyles.input, nomeError && globalStyles.inputError]}
-                        placeholder="Nome Completo"
-                        value={nome}
-                        onChangeText={setNome}
-                    ></TextInput>
-                    { nomeError ? <Text style={globalStyles.errorText}>{nomeError}</Text> : null}
-                </View>
-                <View style={globalStyles.inputContainer}>
-                    <TextInput
-                        style={[globalStyles.input, emailError && globalStyles.inputError]}
-                        placeholder="Email"
-                        value={email}
-                        onChangeText={setEmail}
-                    ></TextInput>
-                    { emailError ? <Text style={globalStyles.errorText}>{emailError}</Text> : null}
-                </View>
-                <View style={globalStyles.inputContainer}>
-                    <TextInput
-                        style={[globalStyles.input, telefoneError && globalStyles.inputError]}
-                        placeholder="Telefone"
-                        value={telefone}
-                        onChangeText={setTelefone}
-                    ></TextInput>
-                    { telefoneError ? <Text style={globalStyles.errorText}>{telefoneError}</Text> : null}
-                </View>
-                <TouchableOpacity style={globalStyles.button} onPress={handleSubmit}>
-                    <Text style={globalStyles.buttonText}>Entrar</Text>
-                </TouchableOpacity>
+            {/* Informações Complementares */}
+            {idade !== null && idade < 18 && (
+                <>
+                    <Text style={styles.sectionTitle}>Informações Complementares</Text>
+                    {renderInput("Nome do Pai", nomePai, setNomePai, "", errors.nomePai)}
+                    {renderInput("Nome da Mãe", nomeMae, setNomeMae, "", errors.nomeMae)}
+                </>
+            )}
+
+            {/* Endereço */}
+            <Text style={styles.sectionTitle}>Endereço</Text>
+            {renderInput("CEP", cep, setCep, "XXXXX-XXX", errors.cep, "numeric")}
+            {renderInput("Endereço", endereco, setEndereco, "Rua / Avenida", errors.endereco)}
+            {renderInput("Número", numero, setNumero, "123", errors.numero, "numeric")}
+            {renderInput("Complemento", complemento, setComplemento, "Opcional", null)}
+            {renderInput("Cidade", cidade, setCidade, "Cidade", errors.cidade)}
+            {renderInput("Estado", estado, setEstado, "Estado", errors.estado)}
+
+            {/* Conta */}
+            <Text style={styles.sectionTitle}>Informações da Conta</Text>
+            {renderInput("Email", email, setEmail, "usuario@dominio.com", errors.email, "email-address")}
+            {renderInput("Senha", senha, setSenha, "********", errors.senha, "default", true)}
+            {renderInput("Confirmar Senha", confirmarSenha, setConfirmarSenha, "********", errors.confirmarSenha, "default", true)}
+
+            <View style={{ marginVertical: 20 }}>
+                <Button title="Validar Formulário" onPress={validar} />
             </View>
-        </View>
-    )
+        </ScrollView>
+    );
 }

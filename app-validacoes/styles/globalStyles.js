@@ -1,109 +1,38 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
-// Cores do IFRO
-const COLORS = {
-  // Verde IFRO (principal)
-  primary: '#00A859',
-  primaryDark: '#008A47', 
-  primaryLight: '#33B972',
-  
-  // Laranja IFRO (secundário)
-  secondary: '#FF6600',
-  secondaryDark: '#E55A00',
-  secondaryLight: '#FF8533',
-  
-  // Cores neutras
-  white: '#FFFFFF',
-  lightGray: '#F5F5F5',
-  gray: '#DDDDDD',
-  darkGray: '#666666',
-  black: '#333333',
-  
-  // Cores de status
-  error: '#E53E3E',
-  success: '#38A169',
-  warning: '#DD6B20',
-};
-
-export const globalStyles = StyleSheet.create({
-  // Container principal
+export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
-  },
-  
-  // Container com scroll
-  scrollView: {
-    flex: 1,
-  },
-  
-  scrollContent: {
     padding: 20,
-    paddingTop: 50,
+    backgroundColor: "#f9f9f9",
   },
-  
-  // Títulos
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 30,
-    color: COLORS.primary,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 10,
+    color: "#333",
   },
-  
-  // Inputs
   inputContainer: {
     marginBottom: 15,
   },
-  
+  label: {
+    fontSize: 14,
+    marginBottom: 5,
+    color: "#555",
+  },
   input: {
     borderWidth: 1,
-    borderColor: COLORS.gray,
-    padding: 12,
+    borderColor: "#aaa",
     borderRadius: 8,
-    fontSize: 16,
-    backgroundColor: COLORS.white,
+    padding: 10,
+    backgroundColor: "#fff",
   },
-  
   inputError: {
-    borderColor: COLORS.error,
+    borderColor: "red",
   },
-  
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  
-  // Botões
-  button: {
-    backgroundColor: COLORS.primary,
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  
-  buttonSecondary: {
-    backgroundColor: COLORS.secondary,
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  
-  buttonText: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  
-  // Texto de erro
   errorText: {
-    color: COLORS.error,
     fontSize: 12,
-    marginTop: 5,
-    marginLeft: 5,
+    color: "red",
+    marginTop: 3,
   },
 });
-
-export { COLORS };
